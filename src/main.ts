@@ -1,5 +1,5 @@
 import { ErrorMapper } from "utils/ErrorMapper";
-import { run as energyque } from "energyque";
+import { Harvester } from "class/Harvester";
 
 declare global {
   /*
@@ -35,7 +35,13 @@ declare global {
 export const loop = ErrorMapper.wrapLoop(() => {
   console.log(`Current game tick is ${Game.time}`);
 
-  energyque();
+  for (const creepName in Game.creeps) {
+    const creep = Game.creeps[creepName];
+    if (creep.memory.role === "harvester") {
+      const harvester = new Harvester(creep);
+      harvester.harvest();
+    }
+  }
 
   // Automatically delete memory of missing creeps
   for (const name in Memory.creeps) {
