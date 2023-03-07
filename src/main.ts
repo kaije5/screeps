@@ -1,5 +1,8 @@
 import { ErrorMapper } from "utils/ErrorMapper";
 import { Harvester } from "class/Harvester";
+import { Upgrader } from "class/Upgrader";
+import { Builder } from "class/Builder";
+import { CreepSpawner } from "class/Spawner";
 
 declare global {
   /*
@@ -18,8 +21,6 @@ declare global {
 
   interface CreepMemory {
     role: string;
-    room: string;
-    working: boolean;
   }
 
   // Syntax for adding proprties to `global` (ex "global.log")
@@ -41,6 +42,28 @@ export const loop = ErrorMapper.wrapLoop(() => {
       const harvester = new Harvester(creep);
       harvester.harvest();
     }
+  }
+
+  for (const creepName in Game.creeps) {
+    const creep = Game.creeps[creepName];
+    if (creep.memory.role === "upgrader") {
+      const upgrader = new Upgrader(creep);
+      upgrader.upgrade();
+    }
+  }
+
+  for (const creepName in Game.creeps) {
+    const creep = Game.creeps[creepName];
+    if (creep.memory.role === "builder") {
+      const builder = new Builder(creep);
+      builder.build();
+    }
+  }
+
+  for (const roomName in Game.rooms) {
+    const room = Game.rooms[roomName];
+    const creepSpawner = new CreepSpawner(room);
+    creepSpawner.spawnCreeps();
   }
 
   // Automatically delete memory of missing creeps
