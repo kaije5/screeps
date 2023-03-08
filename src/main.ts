@@ -2,6 +2,8 @@ import { ErrorMapper } from "utils/ErrorMapper";
 import Harvester from "class/Harvester";
 import Upgrader from "class/Upgrader";
 import Builder from "class/Builder";
+import Repairer from "class/Repairer";
+import Defender from "class/Defender";
 import { CreepSpawner } from "class/Spawner";
 
 declare global {
@@ -23,6 +25,8 @@ declare global {
     role: string;
     building?: boolean;
     harvesting?: boolean;
+    repairing?: boolean;
+    upgrading?: boolean;
   }
 
   // Syntax for adding proprties to `global` (ex "global.log")
@@ -72,6 +76,22 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
       // Call the run() method on the Builder instance
       builder.run();
+    }
+    // Check if the creep's role is "repairer"
+    if (creep.memory.role === "repairer") {
+      // Create a new instance of the Builder class for this creep
+      const repairer = new Repairer(creep);
+
+      // Call the run() method on the Builder instance
+      repairer.run();
+    }
+    // Check if the creep's role is "defender"
+    if (creep.memory.role === "defender") {
+      // Create a new instance of the Builder class for this creep
+      const defender = new Defender(creep);
+
+      // Call the run() method on the Builder instance
+      defender.run();
     }
   }
 
