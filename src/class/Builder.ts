@@ -9,11 +9,13 @@ class Builder {
     if (this.creep.memory.building && this.creep.store[RESOURCE_ENERGY] === 0) {
       // If the creep is out of energy and currently building, it will stop building
       this.creep.memory.building = false;
+      this.creep.say("🔄 harvest");
     }
 
     if (!this.creep.memory.building && this.creep.store.getFreeCapacity() === 0) {
       // If the creep has energy and isn't currently building, it will start building
       this.creep.memory.building = true;
+      this.creep.say("🚧 build");
     }
 
     if (this.creep.memory.building) {
@@ -21,7 +23,7 @@ class Builder {
       const target = this.creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
       if (target) {
         if (this.creep.build(target) === ERR_NOT_IN_RANGE) {
-          this.creep.moveTo(target);
+          this.creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
         }
       }
     } else {
