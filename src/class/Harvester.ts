@@ -19,13 +19,10 @@ class Harvester {
     }
 
     if (this.creep.memory.harvesting) {
-      // If the creep is currently harvesting, it will try to find the closest energy source to harvest from
-      const sources = this.creep.room.find(FIND_SOURCES_ACTIVE);
-      const closestSource = this.creep.pos.findClosestByPath(sources);
-      if (closestSource) {
-        if (this.creep.harvest(closestSource) === ERR_NOT_IN_RANGE) {
-          this.creep.moveTo(closestSource);
-        }
+      // If the creep is out of energy, it will try to get more
+      const sources = this.creep.room.find(FIND_SOURCES);
+      if (this.creep.harvest(sources[0]) === ERR_NOT_IN_RANGE) {
+        this.creep.moveTo(sources[0], { visualizePathStyle: { stroke: "#ffffff" } });
       }
     } else {
       // If the creep is not currently harvesting, it will try to find the closest structure that needs energy and deposit its energy there
@@ -40,7 +37,7 @@ class Harvester {
       const closestTarget = this.creep.pos.findClosestByPath(targets);
       if (closestTarget) {
         if (this.creep.transfer(closestTarget, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-          this.creep.moveTo(closestTarget);
+          this.creep.moveTo(closestTarget, { visualizePathStyle: { stroke: "#ffffff" } });
         }
       }
     }
