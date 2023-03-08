@@ -25,11 +25,11 @@ export class CreepSpawner {
       const builderCount = this.countCreeps("builder");
 
       if (harvesterCount < 2) {
-        this.spawnCreep("harvester", [WORK, CARRY, MOVE], `Harvester${Game.time}`);
+        this.spawnCreep("harvester", [WORK, CARRY, MOVE, MOVE], `Harvester${Game.time}`);
       } else if (upgraderCount < 2) {
-        this.spawnCreep("upgrader", [WORK, CARRY, MOVE], `Upgrader${Game.time}`);
+        this.spawnCreep("upgrader", [WORK, CARRY, MOVE, MOVE], `Upgrader${Game.time}`);
       } else if (builderCount < 2) {
-        this.spawnCreep("builder", [WORK, CARRY, MOVE], `Builder${Game.time}`);
+        this.spawnCreep("builder", [WORK, CARRY, MOVE, MOVE], `Builder${Game.time}`);
       }
     }
   }

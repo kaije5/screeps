@@ -1,7 +1,7 @@
 import { ErrorMapper } from "utils/ErrorMapper";
-import { Harvester } from "class/Harvester";
-import { Upgrader } from "class/Upgrader";
-import { Builder } from "class/Builder";
+import Harvester from "class/Harvester";
+import Upgrader from "class/Upgrader";
+import Builder from "class/Builder";
 import { CreepSpawner } from "class/Spawner";
 
 declare global {
@@ -21,6 +21,7 @@ declare global {
 
   interface CreepMemory {
     role: string;
+    building?: boolean;
   }
 
   // Syntax for adding proprties to `global` (ex "global.log")
@@ -36,34 +37,41 @@ declare global {
 export const loop = ErrorMapper.wrapLoop(() => {
   console.log(`Current game tick is ${Game.time}`);
 
-  for (const creepName in Game.creeps) {
-    const creep = Game.creeps[creepName];
-    if (creep.memory.role === "harvester") {
-      const harvester = new Harvester(creep);
-      harvester.harvest();
-    }
-  }
-
-  for (const creepName in Game.creeps) {
-    const creep = Game.creeps[creepName];
-    if (creep.memory.role === "upgrader") {
-      const upgrader = new Upgrader(creep);
-      upgrader.upgrade();
-    }
-  }
-
-  for (const creepName in Game.creeps) {
-    const creep = Game.creeps[creepName];
-    if (creep.memory.role === "builder") {
-      const builder = new Builder(creep);
-      builder.build();
-    }
-  }
-
   for (const roomName in Game.rooms) {
     const room = Game.rooms[roomName];
     const creepSpawner = new CreepSpawner(room);
     creepSpawner.spawnCreeps();
+  }
+
+  // Iterate over all creeps in the game
+  for (const creepName in Game.creeps) {
+    const creep = Game.creeps[creepName];
+
+    // Check if the creep's role is "harvester"
+    if (creep.memory.role === "harvester") {
+      // Create a new instance of the Harvester class for this creep
+      const harvester = new Harvester(creep);
+
+      // Call the run() method on the Harvester instance
+      harvester.run();
+    }
+    // Check if the creep's role is "upgrader"
+    if (creep.memory.role === "upgrader") {
+      // Create a new instance of the Upgrader class for this creep
+      const upgrader = new Upgrader(creep);
+
+      // Call the run() method on the Upgrader instance
+      upgrader.run();
+    }
+
+    // Check if the creep's role is "builder"
+    if (creep.memory.role === "builder") {
+      // Create a new instance of the Builder class for this creep
+      const builder = new Builder(creep);
+
+      // Call the run() method on the Builder instance
+      builder.run();
+    }
   }
 
   // Automatically delete memory of missing creeps
