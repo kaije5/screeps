@@ -1,3 +1,4 @@
+import { findClosestSource } from "functions/findClosestSource";
 
 class Builder {
   private readonly creep: Creep;
@@ -29,9 +30,16 @@ class Builder {
       }
     } else {
       // If the creep is not currently building, it will try to get energy from a nearby source
-      const sources = this.creep.room.find(FIND_SOURCES);
-      if (this.creep.harvest(sources[1]) === ERR_NOT_IN_RANGE) {
-        this.creep.moveTo(sources[1], { visualizePathStyle: { stroke: "#ffaa00" } });
+      const source = findClosestSource(this.creep.pos);
+      if (source) {
+        // Type assertion to convert nullable type to non-nullable type
+        const closestSource = source as Source;
+        // Harvest the source
+        const result = this.creep.harvest(closestSource);
+        if (result === ERR_NOT_IN_RANGE) {
+          // Move towards the source
+          this.creep.moveTo(closestSource);
+        }
       }
     }
   }

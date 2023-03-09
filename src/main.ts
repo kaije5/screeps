@@ -53,13 +53,13 @@ interface RoomMemory {
 export const loop = ErrorMapper.wrapLoop(() => {
   console.log(`Current game tick is ${Game.time}`);
 
-  const energyAvailable = spawn.room.energyAvailable;
-  const energyCapacity = spawn.room.energyCapacityAvailable;
+  const spawns = Object.values(Game.spawns);
 
-  if (energyAvailable === energyCapacity) {
+  for (const spawn of spawns) {
+    const customSpawn = new CustomSpawn(spawn);
+
     customSpawn.spawnCreep();
   }
-
   // Iterate over all creeps in the game
   for (const creepName in Game.creeps) {
     const creep = Game.creeps[creepName];

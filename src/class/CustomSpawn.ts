@@ -15,6 +15,14 @@ class CustomSpawn {
     return _.filter(Game.creeps, (creep) => creep.memory.role === role).length;
   }
 
+  get energyAvailable(): number {
+    return this.spawn.store.getUsedCapacity(RESOURCE_ENERGY);
+  }
+
+  get energyCapacity(): number {
+    return this.spawn.store.getCapacity(RESOURCE_ENERGY);
+  }
+
   public spawnCreep() {
     const harvesterCount = this.countCreeps("harvester");
     const upgraderCount = this.countCreeps("upgrader");
@@ -22,18 +30,18 @@ class CustomSpawn {
     const RepairerCount = this.countCreeps("repairer");
     const DefenderCount = this.countCreeps("defender");
 
-    const energyAvailable = this.spawn.room.energyAvailable;
-
-    if (harvesterCount < 3) {
-      this.createCustomCreep(energyAvailable, "harvester");
-    } else if (upgraderCount < 1) {
-      this.createCustomCreep(energyAvailable, "upgrader");
-    } else if (DefenderCount < 2) {
-      this.createCustomCreep(energyAvailable, "defender");
-    } else if (builderCount < 1) {
-      this.createCustomCreep(energyAvailable, "builder");
-    } else if (RepairerCount < 2) {
-      this.createCustomCreep(energyAvailable, "repairer");
+    if (this.energyAvailable === this.energyCapacity) {
+      if (harvesterCount < 3) {
+        this.createCustomCreep(this.energyAvailable, "harvester");
+      } else if (upgraderCount < 2) {
+        this.createCustomCreep(this.energyAvailable, "upgrader");
+      } else if (DefenderCount < 2) {
+        this.createCustomCreep(this.energyAvailable, "defender");
+      } else if (builderCount < 1) {
+        this.createCustomCreep(this.energyAvailable, "builder");
+      } else if (RepairerCount < 1) {
+        this.createCustomCreep(this.energyAvailable, "repairer");
+      }
     }
   }
 
@@ -68,7 +76,7 @@ class CustomSpawn {
     }
 
     // Create the creep with the calculated body and memory
-    const creepName = `${roleName}_${Game.time}`;
+    const creepName = `${roleName}-${Game.time}`;
     const memory: CreepMemory = { role: roleName };
     const result = this.spawn.spawnCreep(body, creepName, { memory });
 

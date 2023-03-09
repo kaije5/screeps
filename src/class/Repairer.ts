@@ -1,4 +1,5 @@
-import { findClosestStructureToRepair } from "./findClosestStructureToRepair";
+import { findClosestSource } from "functions/findClosestSource";
+import { findClosestStructureToRepair } from "functions/findClosestStructureToRepair";
 
 export class Repairer {
   private readonly creep: Creep;
@@ -25,10 +26,15 @@ export class Repairer {
         }
       }
     } else {
-      const source = this.creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
+      const source = findClosestSource(this.creep.pos);
       if (source) {
-        if (this.creep.harvest(source) === ERR_NOT_IN_RANGE) {
-          this.creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
+        // Type assertion to convert nullable type to non-nullable type
+        const closestSource = source as Source;
+        // Harvest the source
+        const result = this.creep.harvest(closestSource);
+        if (result === ERR_NOT_IN_RANGE) {
+          // Move towards the source
+          this.creep.moveTo(closestSource);
         }
       }
     }

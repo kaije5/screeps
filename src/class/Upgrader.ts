@@ -1,3 +1,5 @@
+import { findClosestSource } from "functions/findClosestSource";
+
 class Upgrader {
   private readonly creep: Creep;
 
@@ -20,10 +22,16 @@ class Upgrader {
         this.creep.moveTo(this.creep.room.controller!, { visualizePathStyle: { stroke: '#ffffff' } });
       }
     } else {
-      // If the creep is out of energy, it will try to get more
-      const sources = this.creep.room.find(FIND_SOURCES);
-      if (this.creep.harvest(sources[0]) === ERR_NOT_IN_RANGE) {
-        this.creep.moveTo(sources[0], { visualizePathStyle: { stroke: "#ffffff" } });
+      const source = findClosestSource(this.creep.pos);
+      if (source) {
+        // Type assertion to convert nullable type to non-nullable type
+        const closestSource = source as Source;
+        // Harvest the source
+        const result = this.creep.harvest(closestSource);
+        if (result === ERR_NOT_IN_RANGE) {
+          // Move towards the source
+          this.creep.moveTo(closestSource);
+        }
       }
     }
   }
