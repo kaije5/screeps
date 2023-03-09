@@ -1,13 +1,6 @@
 import { ErrorMapper } from "utils/ErrorMapper";
-import Harvester from "class/Harvester";
-import Upgrader from "class/Upgrader";
-import Builder from "class/Builder";
-import Repairer from "class/Repairer";
-import Defender from "class/Defender";
+import { scheduler } from "class/Scheduler";
 import { CustomSpawn } from 'class/CustomSpawn';
-
-const spawn = Game.spawns['W22S37-SP01'];
-const customSpawn = new CustomSpawn(spawn);
 
 declare global {
   /*
@@ -26,10 +19,9 @@ declare global {
 
   interface CreepMemory {
     role: string;
-    building?: boolean;
-    harvesting?: boolean;
-    repairing?: boolean;
-    upgrading?: boolean;
+    jobType?: string;
+    jobState?: number;
+    jobLocation?: RoomPosition;
   }
 
   // Syntax for adding proprties to `global` (ex "global.log")
@@ -57,55 +49,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
   for (const spawn of spawns) {
     const customSpawn = new CustomSpawn(spawn);
-
     customSpawn.spawnCreep();
   }
-  // Iterate over all creeps in the game
-  for (const creepName in Game.creeps) {
-    const creep = Game.creeps[creepName];
 
-    // Check if the creep's role is "harvester"
-    if (creep.memory.role === "harvester") {
-      // Create a new instance of the Harvester class for this creep
-      const harvester = new Harvester(creep);
-
-      // Call the run() method on the Harvester instance
-      harvester.run();
-    }
-    // Check if the creep's role is "upgrader"
-    if (creep.memory.role === "upgrader") {
-      // Create a new instance of the Upgrader class for this creep
-      const upgrader = new Upgrader(creep);
-
-      // Call the run() method on the Upgrader instance
-      upgrader.run();
-    }
-
-    // Check if the creep's role is "builder"
-    if (creep.memory.role === "builder") {
-      // Create a new instance of the Builder class for this creep
-      const builder = new Builder(creep);
-
-      // Call the run() method on the Builder instance
-      builder.run();
-    }
-    // Check if the creep's role is "repairer"
-    if (creep.memory.role === "repairer") {
-      // Create a new instance of the Builder class for this creep
-      const repairer = new Repairer(creep);
-
-      // Call the run() method on the Builder instance
-      repairer.run();
-    }
-    // Check if the creep's role is "defender"
-    if (creep.memory.role === "defender") {
-      // Create a new instance of the Builder class for this creep
-      const defender = new Defender(creep);
-
-      // Call the run() method on the Builder instance
-      defender.run();
-    }
-  }
+  scheduler.assignJobsToCreeps();
 
   // Automatically delete memory of missing creeps
   for (const name in Memory.creeps) {

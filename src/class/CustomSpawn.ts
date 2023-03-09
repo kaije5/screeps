@@ -35,9 +35,9 @@ class CustomSpawn {
         this.createCustomCreep(this.energyAvailable, "harvester");
       } else if (upgraderCount < 2) {
         this.createCustomCreep(this.energyAvailable, "upgrader");
-      } else if (DefenderCount < 2) {
+      } else if (DefenderCount < 0) {
         this.createCustomCreep(this.energyAvailable, "defender");
-      } else if (builderCount < 1) {
+      } else if (builderCount < 4) {
         this.createCustomCreep(this.energyAvailable, "builder");
       } else if (RepairerCount < 1) {
         this.createCustomCreep(this.energyAvailable, "repairer");
