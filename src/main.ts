@@ -4,7 +4,10 @@ import Upgrader from "class/Upgrader";
 import Builder from "class/Builder";
 import Repairer from "class/Repairer";
 import Defender from "class/Defender";
-import { CreepSpawner } from "class/Spawner";
+import { CustomSpawn } from 'class/CustomSpawn';
+
+const spawn = Game.spawns['W22S37-SP01'];
+const customSpawn = new CustomSpawn(spawn);
 
 declare global {
   /*
@@ -37,15 +40,24 @@ declare global {
   }
 }
 
+interface SpawnMemory {
+  [name: string]: any;
+}
+
+interface RoomMemory {
+  [name: string]: any;
+}
+
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
 export const loop = ErrorMapper.wrapLoop(() => {
   console.log(`Current game tick is ${Game.time}`);
 
-  for (const roomName in Game.rooms) {
-    const room = Game.rooms[roomName];
-    const creepSpawner = new CreepSpawner(room);
-    creepSpawner.spawnCreeps();
+  const energyAvailable = spawn.room.energyAvailable;
+  const energyCapacity = spawn.room.energyCapacityAvailable;
+
+  if (energyAvailable === energyCapacity) {
+    customSpawn.spawnCreep();
   }
 
   // Iterate over all creeps in the game

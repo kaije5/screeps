@@ -1,3 +1,4 @@
+
 class Builder {
   private readonly creep: Creep;
 
@@ -23,7 +24,7 @@ class Builder {
       const target = this.creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
       if (target) {
         if (this.creep.build(target) === ERR_NOT_IN_RANGE) {
-          this.creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
+          this.creep.moveTo(target);
         }
       }
     } else {
@@ -35,5 +36,4 @@ class Builder {
     }
   }
 }
-
 export default Builder;
