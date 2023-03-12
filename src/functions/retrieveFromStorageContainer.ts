@@ -1,5 +1,5 @@
-import { findClosestStorageWithEnergy } from "./findClosestStorageWithEnergy";
-import { findClosestContainerWithEnergy } from "./findClosestContainerWithEnergy";
+import { findClosestStorageWithEnergy } from "./findClosestStorage";
+import { findClosestContainerWithEnergy } from "./findClosestContainer";
 
 export function retrieveFromStorageContainer(creep: Creep) {
   // Find the closest storage  or container to retrieve energy from.

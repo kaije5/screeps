@@ -1,9 +1,9 @@
 import { findClosestStructureToRepair } from "../functions/findClosestStructureToRepair";
-import { findClosestSourceWithEnergy } from "../functions/findClosestSourceWithEnergy";
-import { findClosestStorageWithEnergy } from "../functions/findClosestStorageWithEnergy";
+import { findClosestSourceWithEnergy } from "../functions/findClosestSource";
 import { findClosestStructureToBuild } from "functions/findClosestStructureToBuild";
-import { putInStorage } from "functions/putInStorage";
+import { putInStorageContainer } from "functions/putInStorageContainer";
 import { retrieveFromStorageContainer } from "functions/retrieveFromStorageContainer";
+import { putInStructure } from "functions/putInStructure";
 
 class Worker {
   public creep: Creep;
@@ -43,7 +43,7 @@ class Harvester extends Worker {
     } else
     // if the creep is full of energy, it will try to find the closest storage and deposit its energy there
     if (this.creep.store.getUsedCapacity() > 0) {
-      putInStorage(this.creep);
+      putInStorageContainer(this.creep);
     } else {
       this.creep.memory.jobState = 1;
     }
@@ -58,25 +58,7 @@ class Provider extends Worker {
 
   // Provide energy to structures: extensions, spawns, towers
   public deposit(): void {
-    // If the creep is not currently harvesting, it will try to find the closest structure that needs energy and deposit its energy there
-    const targets = this.creep.room.find(FIND_MY_STRUCTURES, {
-      filter: structure => {
-        return (
-          (structure.structureType === STRUCTURE_EXTENSION ||
-            structure.structureType === STRUCTURE_SPAWN ||
-            structure.structureType === STRUCTURE_TOWER) &&
-          structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-        );
-      }
-    });
-    const closestTarget = this.creep.pos.findClosestByPath(targets);
-    if (closestTarget && this.creep.store.getUsedCapacity() > 0) {
-      if (this.creep.transfer(closestTarget, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-        this.creep.moveTo(closestTarget, { visualizePathStyle: { stroke: "#ffffff" } });
-      } else if (this.creep.store.getUsedCapacity() === 0) {
-        this.creep.memory.jobState = 1;
-      }
-    }
+    putInStructure(this.creep);
   }
 }
 

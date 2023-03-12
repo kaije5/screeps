@@ -5,3 +5,10 @@ export function findClosestStorageWithEnergy(pos: RoomPosition): StructureStorag
     });
     return storage;
 }
+
+export function findClosestStorageWithSpace(pos: RoomPosition): StructureStorage | null {
+    const storage: StructureStorage | null = pos.findClosestByPath(FIND_STRUCTURES, {
+        filter: (s) => s.structureType === STRUCTURE_STORAGE && s.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+    });
+    return storage;
+}
