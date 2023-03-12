@@ -1,7 +1,7 @@
-import Worker from "./Worker";
+import Worker, { Provider, Builder, Upgrader, Repairer } from "./Worker";
 
 interface Job {
-  type: "harvester" | "upgrader" | "builder" | "repairer";
+  type: "provider" | "upgrader" | "builder" | "repairer";
   location: RoomPosition;
 }
 
@@ -9,11 +9,13 @@ class Scheduler {
   private queue: Job[];
   private creeps: Creep[];
 
+  private spawn: StructureSpawn;
 
   constructor() {
     this.queue = [];
 
-
+    // Get the spawn
+    this.spawn = Object.values(Game.spawns)[0];
 
     // Get all creeps in the game
     this.creeps = Object.values(Game.creeps);
@@ -28,8 +30,11 @@ class Scheduler {
   }
 
   private state1(worker: Worker) {
-    // Get energy
-    worker.harvest();
+    // Get energy from storages until the creep is full
+    worker.retrieveEnergy();
+    if (worker.creep.store.getFreeCapacity() === 0) {
+      worker.creep.memory.jobState = 2;
+    }
   }
 
   private state2(worker: Worker) {
@@ -45,17 +50,21 @@ class Scheduler {
   private state3(worker: Worker) {
     // Work on job until it's done
     switch (worker.creep.memory.jobType) {
-      case "harvester":
-        worker.deposit();
+      case "provider":
+        var provider = new Provider(worker.creep);
+        provider.deposit();
         break;
       case "upgrader":
-        worker.upgrade();
+        var upgrader = new Upgrader(worker.creep);
+        upgrader.upgrade();
         break;
       case "builder":
-        worker.build();
+        var builder = new Builder(worker.creep);
+        builder.build();
         break;
       case "repairer":
-        worker.repair();
+        var repairer = new Repairer(worker.creep);
+        repairer.repair();
         break;
       default:
         worker.creep.memory.jobState = 1;
@@ -76,35 +85,37 @@ class Scheduler {
     }
   }
 
-  private harvesterJobs() {
+  public generateJobs() {
+    // Generate jobs for all creeps make sure to balance the number of jobs for each type using the input parameters from the room memory
+  }
+
+  private providerJobs() {
     const sources: Source[] = this.spawn.room.find(FIND_SOURCES);
     for (const source of sources) {
       if (source.energy < source.energyCapacity) {
         const job: Job = {
-          type: "harvester",
+          type: "provider",
           location: source.pos
         };
       }
     }
   }
 
-//  private builderJobs() {
-//    const constructionSites: ConstructionSite[] = Game.constructionSites;
-//
-//    for (const site of constructionSites) {
-//      const job: Job = {
-//        type: "builder",
-//        location: site.pos
-//      };
-//
+  private builderJobs() {
+    const constructionSites: ConstructionSite[] = this.spawn.room.find(FIND_CONSTRUCTION_SITES);
+    for (const site of constructionSites) {
+      const job: Job = {
+        type: "builder",
+        location: site.pos
+      };
+
       // Add the job to the queue
-//      this.enqueue(job);
-//    }
-//  }
+      this.enqueue(job);
+    }
+  }
 
   private repairerJobs() {
     const structures: Structure[] = this.spawn.room.find(FIND_STRUCTURES);
-
     for (const structure of structures) {
       if (structure.hits < structure.hitsMax) {
         const job: Job = {
@@ -119,10 +130,16 @@ class Scheduler {
   }
 
   private upgraderJobs() {
-    const job: Job = {
-      type: "upgrader",
-      location: this.controller.pos
-    };
+    const controller: StructureController | undefined = this.spawn.room.controller;
+    if (controller) {
+      const job: Job = {
+        type: "upgrader",
+        location: controller.pos
+      };
+
+      // Add the job to the queue
+      this.enqueue(job);
+    }
   }
 
   public assignJobsToCreeps() {

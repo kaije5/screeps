@@ -18,7 +18,6 @@ declare global {
   }
 
   interface CreepMemory {
-    role: string;
     jobType?: string;
     jobState?: number;
     jobLocation?: RoomPosition;

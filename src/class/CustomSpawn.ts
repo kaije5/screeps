@@ -11,10 +11,6 @@ class CustomSpawn {
     this.spawn = spawn;
   }
 
-  private countCreeps(role: string) {
-    return _.filter(Game.creeps, (creep) => creep.memory.role === role).length;
-  }
-
   get energyAvailable(): number {
     return this.spawn.store.getUsedCapacity(RESOURCE_ENERGY);
   }
@@ -24,28 +20,13 @@ class CustomSpawn {
   }
 
   public spawnCreep() {
-    const harvesterCount = this.countCreeps("harvester");
-    const upgraderCount = this.countCreeps("upgrader");
-    const builderCount = this.countCreeps("builder");
-    const RepairerCount = this.countCreeps("repairer");
-    const DefenderCount = this.countCreeps("defender");
 
     if (this.energyAvailable === this.energyCapacity) {
-      if (harvesterCount < 3) {
-        this.createCustomCreep(this.energyAvailable, "harvester");
-      } else if (upgraderCount < 2) {
-        this.createCustomCreep(this.energyAvailable, "upgrader");
-      } else if (DefenderCount < 0) {
-        this.createCustomCreep(this.energyAvailable, "defender");
-      } else if (builderCount < 4) {
-        this.createCustomCreep(this.energyAvailable, "builder");
-      } else if (RepairerCount < 1) {
-        this.createCustomCreep(this.energyAvailable, "repairer");
-      }
+      this.createCustomCreep(this.energyAvailable);
     }
   }
 
-  public createCustomCreep(energy: number, roleName: string) {
+  public createCustomCreep(energy: number) {
     // Define the body parts and their costs
     const body: BodyPartConstant[] = [];
     let remainingEnergy = energy;
@@ -76,8 +57,8 @@ class CustomSpawn {
     }
 
     // Create the creep with the calculated body and memory
-    const creepName = `${roleName}-${Game.time}`;
-    const memory: CreepMemory = { role: roleName };
+    const creepName = `W-${Game.time}`;
+    const memory: CreepMemory = { jobState: 1};
     const result = this.spawn.spawnCreep(body, creepName, { memory });
 
     // Return the result of the `spawnCreep` method call
