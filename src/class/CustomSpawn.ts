@@ -58,7 +58,7 @@ class CustomSpawn {
 
     // Create the creep with the calculated body and memory
     const creepName = `W-${Game.time}`;
-    const memory: CreepMemory = { jobState: 1};
+    const memory: CreepMemory = { jobState: 1 };
     const result = this.spawn.spawnCreep(body, creepName, { memory });
 
     // Return the result of the `spawnCreep` method call

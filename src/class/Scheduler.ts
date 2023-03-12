@@ -1,7 +1,7 @@
 import Worker, { Provider, Builder, Upgrader, Repairer } from "./Worker";
 
 interface Job {
-  type: "provider" | "upgrader" | "builder" | "repairer";
+  type: "provider" | "upgrader" | "builder" | "repairer" | "harvester";
   location: RoomPosition;
 }
 
@@ -86,19 +86,76 @@ class Scheduler {
   }
 
   public generateJobs() {
-    // Generate jobs for all creeps make sure to balance the number of jobs for each type using the input parameters from the room memory
+    // Generate all types of jobs. Balance the number of jobs based on the needed energy.
+
+    // Get the number of creeps based on their type
+    const harvesters = this.creeps.filter(c => c.memory.jobType === "harvester").length;
+    const providers = this.creeps.filter(c => c.memory.jobType === "provider").length;
+    const builders = this.creeps.filter(c => c.memory.jobType === "builder").length;
+    const upgraders = this.creeps.filter(c => c.memory.jobType === "upgrader").length;
+    const repairers = this.creeps.filter(c => c.memory.jobType === "repairer").length;
+
+    // Get the number of jobs based on their type
+    const harvesterJobs = this.queue.filter(j => j.type === "harvester").length;
+    const providerJobs = this.queue.filter(j => j.type === "provider").length;
+    const builderJobs = this.queue.filter(j => j.type === "builder").length;
+    const upgraderJobs = this.queue.filter(j => j.type === "upgrader").length;
+    const repairerJobs = this.queue.filter(j => j.type === "repairer").length;
+
+    // Get the number of energy needed for each type of job
+    const harvesterEnergy = harvesters * 50;
+    const providerEnergy = providers * 50;
+    const builderEnergy = builders * 50;
+    const upgraderEnergy = upgraders * 50;
+    const repairerEnergy = repairers * 50;
+
+    // Get the number of energy available for each type of job
+    const harvesterEnergyAvailable = harvesterJobs * 50;
+    const providerEnergyAvailable = providerJobs * 50;
+    const builderEnergyAvailable = builderJobs * 50;
+    const upgraderEnergyAvailable = upgraderJobs * 50;
+    const repairerEnergyAvailable = repairerJobs * 50;
+
+    // Get the number of jobs needed for each type of job
+    const harvesterJobsNeeded = Math.ceil((harvesterEnergy - harvesterEnergyAvailable) / 50);
+    const providerJobsNeeded = Math.ceil((providerEnergy - providerEnergyAvailable) / 50);
+    const builderJobsNeeded = Math.ceil((builderEnergy - builderEnergyAvailable) / 50);
+    const upgraderJobsNeeded = Math.ceil((upgraderEnergy - upgraderEnergyAvailable) / 50);
+    const repairerJobsNeeded = Math.ceil((repairerEnergy - repairerEnergyAvailable) / 50);
+
+    // Generate jobs
+    for (let i = 0; i < harvesterJobsNeeded; i++) {
+      this.harvesterJobs();
+    }
+    for (let i = 0; i < providerJobsNeeded; i++) {
+      this.providerJobs();
+    }
+    for (let i = 0; i < builderJobsNeeded; i++) {
+      this.builderJobs();
+    }
+    for (let i = 0; i < upgraderJobsNeeded; i++) {
+      this.upgraderJobs();
+    }
+    for (let i = 0; i < repairerJobsNeeded; i++) {
+      this.repairerJobs();
+    }
+
+  }
+
+  private harvesterJobs() {
+    // Get all sources in the room
+    const sources: Source[] = this.spawn.room.find(FIND_SOURCES);
+    // Create a job for each source
+    for (const source of sources) {
+      const job: Job = {
+        type: "harvester",
+        location: source.pos
+      };
+    }
   }
 
   private providerJobs() {
-    const sources: Source[] = this.spawn.room.find(FIND_SOURCES);
-    for (const source of sources) {
-      if (source.energy < source.energyCapacity) {
-        const job: Job = {
-          type: "provider",
-          location: source.pos
-        };
-      }
-    }
+
   }
 
   private builderJobs() {

@@ -46,11 +46,13 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
   const spawns = Object.values(Game.spawns);
 
+  // Spawn creeps
   for (const spawn of spawns) {
     const customSpawn = new CustomSpawn(spawn);
     customSpawn.spawnCreep();
   }
 
+  // Run the scheduler to assign jobs to creeps
   scheduler.assignJobsToCreeps();
 
   // Automatically delete memory of missing creeps

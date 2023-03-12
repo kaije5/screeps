@@ -2,6 +2,8 @@ import { findClosestStructureToRepair } from "../functions/findClosestStructureT
 import { findClosestSourceWithEnergy } from "../functions/findClosestSourceWithEnergy";
 import { findClosestStorageWithEnergy } from "../functions/findClosestStorageWithEnergy";
 import { findClosestStructureToBuild } from "functions/findClosestStructureToBuild";
+import { putInStorage } from "functions/putInStorage";
+import { retrieveFromStorageContainer } from "functions/retrieveFromStorageContainer";
 
 class Worker {
   public creep: Creep;
@@ -20,12 +22,30 @@ class Worker {
   }
 
   public retrieveEnergy(): void {
-    // If the creeps energy is not full retrieve energy from the closest storage
-    const storage = findClosestStorageWithEnergy(this.creep.pos);
-    if (storage && this.creep.store.getFreeCapacity() > 0) {
-      if (this.creep.withdraw(storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-        this.creep.moveTo(storage, { visualizePathStyle: { stroke: "#ffaa00" } });
+    // If the creeps energy is not full retrieve energy from the closest storage or container
+    retrieveFromStorageContainer(this.creep);
+  }
+}
+
+class Harvester extends Worker {
+  constructor(creep: Creep) {
+    super(creep);
+  }
+
+  // Harvest energy from sources and Store it in the closest storage.
+  public harvest(): void {
+    // If the creep is not currently harvesting, it will try to find the closest source and harvest energy from it
+    const source = findClosestSourceWithEnergy(this.creep.pos);
+    if (source && this.creep.store.getFreeCapacity() > 0) {
+      if (this.creep.harvest(source) === ERR_NOT_IN_RANGE) {
+        this.creep.moveTo(source, { visualizePathStyle: { stroke: "#ffaa00" } });
       }
+    } else
+    // if the creep is full of energy, it will try to find the closest storage and deposit its energy there
+    if (this.creep.store.getUsedCapacity() > 0) {
+      putInStorage(this.creep);
+    } else {
+      this.creep.memory.jobState = 1;
     }
   }
 
@@ -111,7 +131,7 @@ class Repairer extends Worker {
   }
 }
 
-export { Provider, Builder, Upgrader, Repairer };
+export { Provider, Builder, Upgrader, Repairer, Harvester };
 
 
 export default Worker;
