@@ -46,14 +46,17 @@ export function AssignHarvestSource(creep: Creep) {
 
 export function assignDepositStructure(creep: Creep) {
   const target = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+    // filter for extensions and spawns that are not full
     filter: (structure) => {
       return (
-        structure.structureType === STRUCTURE_EXTENSION ||
-        structure.structureType === STRUCTURE_SPAWN ||
-        structure.structureType === STRUCTURE_TOWER
+        (structure.structureType === STRUCTURE_EXTENSION ||
+          structure.structureType === STRUCTURE_SPAWN ||
+          structure.structureType === STRUCTURE_TOWER) &&
+        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
       );
     },
   });
+  // if target is found and is not full, deposit energy
   if (target) {
     creep.memory.target = target;
     creep.memory.status = 3;

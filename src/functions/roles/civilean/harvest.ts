@@ -19,6 +19,7 @@ export function harvest(creep: Creep) {
 export function deposit(creep: Creep) {
   //deposit to the closest structure
   let target = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+    // filter for extensions and spawns that are not full
     filter: (structure) => {
       return (
         (structure.structureType === STRUCTURE_EXTENSION ||
@@ -29,12 +30,15 @@ export function deposit(creep: Creep) {
     },
   });
 
+  // if target is found and is not full, deposit energy
   if (target) {
     //if target is a structure, deposit energy in it
     if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
         creep.memory.status = 3;
     }
+  // else if target is found and is full,
   } else {
+    creep.memory.target = {};
     creep.memory.status = 5;
   }
 }
