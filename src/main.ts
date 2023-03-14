@@ -51,7 +51,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   const creeps = Object.values(Game.creeps);
 
   const room = Game.rooms["W27N13"]
-  const totalAllowedCreeps = 12;
+  const totalAllowedCreeps = 10;
 
   // Spawn creeps
   for (const spawn of spawns) {

@@ -18,7 +18,7 @@ export function assignRole(room: Room): Role {
 
   // calculate how many creeps we need for each role
   const numHarvesters = 3;
-  const numBuilders = 5;
+  const numBuilders = 3;
   const numUpgraders = 2;
   const numRepairers = 1;
   const numWallRepairers = 0;

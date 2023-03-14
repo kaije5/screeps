@@ -40,19 +40,19 @@ export function dispatch(status: number, creep: Creep) {
 
     // Get energy status
     function status1(creep: Creep) {
-        creep.say("status1")
+        //creep.say("status1")
         harvest(creep);
     }
 
     // At rest position status
     function status2(creep: Creep) {
-        creep.say("status2")
+        //creep.say("status2")
         creep.memory.status = 5;
     }
 
     // Move to work status
     function status3(creep: Creep) {
-        creep.say("status3")
+        //creep.say("status3")
         let target = Game.getObjectById(creep.memory.target);
         // if creep has no target
         if (target === undefined) {
@@ -73,20 +73,22 @@ export function dispatch(status: number, creep: Creep) {
 
     // At work status
     function status4(creep: Creep) {
-        creep.say("status4")
+        //creep.say("status4")
         //if creep is trying to build but has no energy left
         const creepCarrying = creep.store.getUsedCapacity();
         if (creepCarrying === 0) {
             //change status to get energy
             creep.memory.status = 1;
+            creep.memory.target = undefined;
         } else {
             run(creep);
         }
+
     }
 
     // Request status
     function status5(creep: Creep, room: Room) {
-        creep.say("status5")
+        //creep.say("status5")
         if (creep.memory.role === undefined) {
             assignRole(room);
         } else if (creep.store.getUsedCapacity() === 0) {
