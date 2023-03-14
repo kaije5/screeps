@@ -17,11 +17,11 @@ class CustomSpawn {
   }
 
   get energyAvailable(): number {
-    return this.spawn.store.getUsedCapacity(RESOURCE_ENERGY);
+    return this.room.energyAvailable;
   }
 
   get energyCapacity(): number {
-    return this.spawn.store.getCapacity(RESOURCE_ENERGY);
+    return this.room.energyCapacityAvailable;
   }
 
   public spawnCreep() {
