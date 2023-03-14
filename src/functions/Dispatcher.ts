@@ -66,7 +66,7 @@ export function dispatch(status: number, creep: Creep) {
                 // change status to work status
                 creep.memory.status = 4;
             } else {
-                creep.moveTo(target.pos.x, target.pos.y);
+                creep.moveTo(target.pos.x, target.pos.y, { visualizePathStyle: { stroke: "#ffaa00" } });
             }
         }
     }
