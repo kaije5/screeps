@@ -1,3 +1,5 @@
+import { assignRole } from "functions/RoleAssignments";
+
 declare var Memory: {
   creeps: {[name: string]: CreepMemory},
   spawns: {[name: string]: SpawnMemory},
@@ -6,9 +8,12 @@ declare var Memory: {
 
 class CustomSpawn {
   private spawn: StructureSpawn;
+  private room: Room;
 
-  constructor(spawn: StructureSpawn) {
+  constructor(spawn: StructureSpawn, room: Room) {
     this.spawn = spawn;
+
+    this.room = room;
   }
 
   get energyAvailable(): number {
@@ -56,9 +61,13 @@ class CustomSpawn {
       remainingEnergy -= carryCost + moveCost;
     }
 
+    // assign the role to the creep
+    const role = assignRole(this.room);
+
+
     // Create the creep with the calculated body and memory
     const creepName = `W-${Game.time}`;
-    const memory: CreepMemory = { jobState: 1 };
+    const memory: CreepMemory = { role: role, status: 2 };
     const result = this.spawn.spawnCreep(body, creepName, { memory });
 
     // Return the result of the `spawnCreep` method call

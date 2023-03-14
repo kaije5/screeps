@@ -13,9 +13,8 @@ export function putInStructure(creep: Creep) {
       const closestTarget = creep.pos.findClosestByPath(targets);
       if (closestTarget && creep.store.getUsedCapacity() > 0) {
         if (creep.transfer(closestTarget, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-          creep.moveTo(closestTarget, { visualizePathStyle: { stroke: "#ffffff" } });
-        } else if (creep.store.getUsedCapacity() === 0) {
-          creep.memory.jobState = 1;
+          console.log(creep.name + " Moving to structure: " + closestTarget.id)
+            creep.moveTo(closestTarget, { visualizePathStyle: { stroke: "#e0ff00" } });
         }
       }
 }

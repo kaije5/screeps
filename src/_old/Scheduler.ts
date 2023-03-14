@@ -1,4 +1,4 @@
-import Worker, { Provider, Builder, Upgrader, Repairer } from "./Worker";
+import Worker, { Provider, Builder, Upgrader, Repairer } from "../class/Worker";
 
 interface Job {
   type: "provider" | "upgrader" | "builder" | "repairer" | "harvester";
@@ -30,14 +30,17 @@ class Scheduler {
   }
 
   private state1(worker: Worker) {
+    worker.creep.say("state1")
     // Get energy from storages until the creep is full
-    worker.retrieveEnergy();
     if (worker.creep.store.getFreeCapacity() === 0) {
       worker.creep.memory.jobState = 2;
+    } else {
+      worker.retrieveEnergy();
     }
   }
 
   private state2(worker: Worker) {
+    worker.creep.say("state2")
     // Get job
     const job = this.getNextJobForCreep(worker.creep);
     if (job) {
@@ -48,26 +51,32 @@ class Scheduler {
   }
 
   private state3(worker: Worker) {
+    worker.creep.say("state3")
     // Work on job until it's done
     switch (worker.creep.memory.jobType) {
       case "provider":
         var provider = new Provider(worker.creep);
         provider.deposit();
+        provider.creep.say("provider");
         break;
       case "upgrader":
         var upgrader = new Upgrader(worker.creep);
         upgrader.upgrade();
+        upgrader.creep.say("upgrader");
         break;
       case "builder":
         var builder = new Builder(worker.creep);
         builder.build();
+        builder.creep.say("builder");
         break;
       case "repairer":
         var repairer = new Repairer(worker.creep);
         repairer.repair();
+        repairer.creep.say("repairer");
         break;
       default:
         worker.creep.memory.jobState = 1;
+        worker.creep.say("default");
         break;
     }
   }

@@ -1,6 +1,9 @@
 import { ErrorMapper } from "utils/ErrorMapper";
-import { scheduler } from "class/Scheduler";
 import { CustomSpawn } from 'class/CustomSpawn';
+
+import { assignRole } from "functions/RoleAssignments";
+import { dispatch } from "functions/Dispatcher";
+
 
 declare global {
   /*
@@ -17,10 +20,15 @@ declare global {
     log: any;
   }
 
+  interface Target {
+    id: string;
+    pos: RoomPosition;
+  }
+
   interface CreepMemory {
-    jobType?: string;
-    jobState?: number;
-    jobLocation?: RoomPosition;
+    role?: string;
+    status: number;
+    target?: Target;
   }
 
   // Syntax for adding proprties to `global` (ex "global.log")
@@ -39,21 +47,45 @@ interface RoomMemory {
   [name: string]: any;
 }
 
-// When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
-// This utility uses source maps to get the line numbers and file names of the original, TS source code
+
+// Main game loop
 export const loop = ErrorMapper.wrapLoop(() => {
   console.log(`Current game tick is ${Game.time}`);
 
   const spawns = Object.values(Game.spawns);
+  const creeps = Object.values(Game.creeps);
+
+  const room = Game.rooms["E3N55"]
+  const totalAllowedCreeps = 30;
 
   // Spawn creeps
   for (const spawn of spawns) {
-    const customSpawn = new CustomSpawn(spawn);
-    customSpawn.spawnCreep();
+    const customSpawn = new CustomSpawn(spawn, room);
+    //if creeps amount is less then totalAllowedCreeps spawn creeps.
+    if (creeps.length < totalAllowedCreeps) {
+      console.log("Creeps amount is less then 10 spawning more")
+      customSpawn.spawnCreep();
+    } else {
+      console.log("Creeps amount is more then 10 no need to spawn more");
+    }
   }
 
-  // Run the scheduler to assign jobs to creeps
-  scheduler.assignJobsToCreeps();
+  // Creep logic
+  for (const creep of creeps) {
+    const role = assignRole(room);
+    // If the creep's role is not defined or is not a valid role, assign a new role
+    if (!creep.memory.role || creep.memory === undefined) {
+      creep.memory = { status: 2, role: role  };
+    } else if (!creep.memory.status) {
+      creep.memory.status = 2;
+    }
+
+    try {
+      dispatch(creep);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   // Automatically delete memory of missing creeps
   for (const name in Memory.creeps) {
