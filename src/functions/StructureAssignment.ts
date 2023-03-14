@@ -44,6 +44,22 @@ export function AssignHarvestSource(creep: Creep) {
   }
 }
 
+export function assignDepositStructure(creep: Creep) {
+  const target = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+    filter: (structure) => {
+      return (
+        structure.structureType === STRUCTURE_EXTENSION ||
+        structure.structureType === STRUCTURE_SPAWN ||
+        structure.structureType === STRUCTURE_TOWER
+      );
+    },
+  });
+  if (target) {
+    creep.memory.target = target;
+    creep.memory.status = 3;
+  }
+}
+
 export function AssignUpgradeController(creep: Creep) {
   const target = creep.room.controller;
   if (target) {

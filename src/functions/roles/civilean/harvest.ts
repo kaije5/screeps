@@ -1,13 +1,40 @@
-import { putInStorageContainer } from "functions/put/putInStorageContainer";
-import { retrieveFromSource } from "functions/retrieve/retrieveFromSource";
-
 export function harvest(creep: Creep) {
-    // until the creeps energy is full retrieve energy from the closest source
-    if (creep.store.getUsedCapacity() < creep.store.getCapacity()) {
-        retrieveFromSource(creep);
-      } else
-      // If the creeps energy is full put it in the closest storage or container
-      if (creep.store.getFreeCapacity() === 0) {
-        putInStorageContainer(creep);
+  // if creep is not a full capacity, harvest energy
+  if (creep.store.getFreeCapacity() > 0) {
+    //get the closest source and set it as target
+    let target = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
+    if (target) {
+      if (target instanceof Source) {
+        if (creep.harvest(target) === ERR_NOT_IN_RANGE) {
+          creep.moveTo(target, { visualizePathStyle: { stroke: "#ffaa00" } });
+        }
       }
+    }
+  } else {
+    //if creep is full, change status to request status
+    creep.memory.status = 5;
+  }
+}
+
+export function deposit(creep: Creep) {
+  //deposit to the closest structure
+  let target = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+    filter: (structure) => {
+      return (
+        (structure.structureType === STRUCTURE_EXTENSION ||
+          structure.structureType === STRUCTURE_SPAWN ||
+          structure.structureType === STRUCTURE_TOWER) &&
+        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+      );
+    },
+  });
+
+  if (target) {
+    //if target is a structure, deposit energy in it
+    if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+        creep.memory.status = 3;
+    }
+  } else {
+    creep.memory.status = 5;
+  }
 }

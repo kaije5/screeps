@@ -1,4 +1,4 @@
-import { harvest } from "./harvest";
+import { deposit, harvest } from "./harvest";
 import { build } from "./build";
 import { upgrade } from "./upgrade";
 import { repair } from "./repair";
@@ -8,7 +8,7 @@ export function run(creep: Creep) {
     switch (creep.memory.role) {
         case "harvester":
           //creep.say("harvester")
-          harvest(creep);
+          deposit(creep);
           break;
         case "builder":
           //creep.say("builder")

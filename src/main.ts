@@ -20,15 +20,10 @@ declare global {
     log: any;
   }
 
-  interface Target {
-    id: string;
-    pos: RoomPosition;
-  }
-
   interface CreepMemory {
     role?: string;
     status: number;
-    target?: Target;
+    target?: any;
   }
 
   // Syntax for adding proprties to `global` (ex "global.log")
@@ -55,18 +50,18 @@ export const loop = ErrorMapper.wrapLoop(() => {
   const spawns = Object.values(Game.spawns);
   const creeps = Object.values(Game.creeps);
 
-  const room = Game.rooms["E3N55"]
-  const totalAllowedCreeps = 30;
+  const room = Game.rooms["W27N13"]
+  const totalAllowedCreeps = 12;
 
   // Spawn creeps
   for (const spawn of spawns) {
     const customSpawn = new CustomSpawn(spawn, room);
     //if creeps amount is less then totalAllowedCreeps spawn creeps.
     if (creeps.length < totalAllowedCreeps) {
-      console.log("Creeps amount is less then 10 spawning more")
+      console.log("Creeps amount is less then totalAllowedCreeps spawning more")
       customSpawn.spawnCreep();
     } else {
-      console.log("Creeps amount is more then 10 no need to spawn more");
+      console.log("Creeps amount is more then totalAllowedCreeps no need to spawn more");
     }
   }
 
@@ -81,7 +76,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
 
     try {
-      dispatch(creep);
+      dispatch(creep.memory.status, creep);
     } catch (e) {
       console.log(e);
     }
