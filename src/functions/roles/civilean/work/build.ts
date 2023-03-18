@@ -4,7 +4,7 @@ export function build(creep: Creep) {
     //if target is a construction site, build it
     if (target instanceof ConstructionSite) {
       if (creep.build(target) === ERR_NOT_IN_RANGE) {
-        creep.memory.status = 3;
+        creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
       }
     }
 }

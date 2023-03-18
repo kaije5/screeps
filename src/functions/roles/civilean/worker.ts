@@ -1,34 +1,33 @@
-import { deposit, harvest } from "./harvest";
-import { build } from "./build";
-import { upgrade } from "./upgrade";
-import { repair } from "./repair";
-import { wallRepair } from "./wallRepairer";
+import { harvest } from "./harvest";
+import { builder } from "./builder";
+import { upgrader } from "./upgrader";
+import { repairer } from "./repairer";
+import { mover } from "./mover";
 
 export function run(creep: Creep) {
     switch (creep.memory.role) {
         case "harvester":
           //creep.say("harvester")
-          deposit(creep);
+          harvest(creep);
+          break;
+        case "mover":
+          //creep.say("mover")
+          mover(creep);
           break;
         case "builder":
           //creep.say("builder")
-          build(creep);
+          builder(creep);
           break;
         case "upgrader":
           //creep.say("upgrader")
-          upgrade(creep);
+          upgrader(creep);
           break;
         case "repairer":
           //creep.say("repairer")
-          repair(creep);
-          break;
-        case "wall_repairer":
-          //creep.say("wall_repairer")
-          wallRepair(creep);
+          repairer(creep);
           break;
 
         default:
-          creep.memory.status = 5;
           break;
       }
 }
