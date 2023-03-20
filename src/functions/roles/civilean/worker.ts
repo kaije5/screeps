@@ -1,4 +1,4 @@
-import { harvest } from "./harvest";
+import { harvest } from "./work/harvest";
 import { builder } from "./builder";
 import { upgrader } from "./upgrader";
 import { repairer } from "./repairer";

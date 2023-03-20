@@ -154,7 +154,7 @@ private countHarvestableSpots(): number {
         return "harvester";
       } else if (numUpgraders < 2) {
           return "upgrader";
-      } else if (numBuilders < 5) {
+      } else if (numBuilders < 3) {
           return "builder";
       } else {
       // If there are enough movers and harvesters, use the random selection
@@ -172,7 +172,7 @@ private countHarvestableSpots(): number {
       const creepType = this.calculateCreepType();
       let body: BodyPartConstant[] = [];
 
-      if(this.energyAvailable >= 300 || this.creeps.length < 3) {
+      if(this.energyAvailable >= 450 || this.creeps.length < 3) {
         console.log("Spawning creep of type:", creepType);
         switch (creepType) {
             case "builder":

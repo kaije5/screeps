@@ -5,8 +5,6 @@ function findDroppedEnergy(creep: Creep): Resource | null {
     filter: (resource) => resource.resourceType === RESOURCE_ENERGY,
   });
 
-  console.log("Dropped energy: " + droppedEnergy.length)
-
   if (droppedEnergy.length > 0) {
     return creep.pos.findClosestByPath(droppedEnergy);
   } else {

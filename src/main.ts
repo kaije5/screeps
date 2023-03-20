@@ -2,6 +2,7 @@ import { ErrorMapper } from "utils/ErrorMapper";
 import CustomSpawn from 'class/CustomSpawn';
 import { run } from "functions/roles/civilean/worker";
 
+
 declare global {
   /*
     Example types, expand on these or remove them and add your own.
