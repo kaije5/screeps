@@ -1,6 +1,6 @@
 export function repair(creep: Creep) {
     const targets = creep.room.find(FIND_STRUCTURES, {
-        filter: object => object.hits < object.hitsMax
+        filter: (s) => s.hits < s.hitsMax
     });
 
     targets.sort((a,b) => a.hits - b.hits);

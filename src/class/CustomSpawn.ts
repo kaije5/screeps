@@ -1,7 +1,6 @@
 declare var Memory: {
   creeps: {[name: string]: CreepMemory},
   spawns: {[name: string]: SpawnMemory},
-  rooms: {[name: string]: RoomMemory}
 };
 
 // CustomSpawn.ts
@@ -29,6 +28,20 @@ class CustomSpawn {
     body.push(MOVE);
 
     return body;
+  }
+
+  private getDefenderBody(): BodyPartConstant[] {
+    const body: BodyPartConstant[] = [];
+    const parts = Math.min(Math.floor(this.energyAvailable / 200), 5);
+
+    for (let i = 0; i < parts; i++) {
+        body.push(TOUGH);
+        body.push(ATTACK);
+        body.push(MOVE);
+    }
+
+    return body;
+
   }
 
   private getBuilderBody(): BodyPartConstant[] {
@@ -95,6 +108,42 @@ class CustomSpawn {
     return body;
   }
 
+  private getClaimerBody(): BodyPartConstant[] {
+    const body: BodyPartConstant[] = [];
+    const parts = Math.min(Math.floor(this.energyAvailable / 650), 1);
+
+    for (let i = 0; i < parts; i++) {
+        body.push(CLAIM);
+        body.push(MOVE);
+    }
+
+    return body;
+  }
+
+  private getAttackerBody(): BodyPartConstant[] {
+    const body: BodyPartConstant[] = [];
+    const parts = Math.min(Math.floor(this.energyAvailable / 80), 25);
+
+    for (let i = 0; i < parts; i++) {
+        body.push(ATTACK);
+        body.push(MOVE);
+    }
+
+    return body;
+  }
+
+  private getHealerBody(): BodyPartConstant[] {
+    const body: BodyPartConstant[] = [];
+    const parts = Math.min(Math.floor(this.energyAvailable / 250), 5);
+
+    for (let i = 0; i < parts; i++) {
+        body.push(HEAL);
+        body.push(MOVE);
+    }
+
+    return body;
+  }
+
   public countCreepsByRole(role: string): number {
     return _.filter(Game.creeps, (creep) => creep.memory.role === role).length;
   }
@@ -137,6 +186,9 @@ private countHarvestableSpots(): number {
       const numBuilders = this.countCreepsByRole("builder");
       const numRepairers = this.countCreepsByRole("repairer");
       const numWallRepairers = this.countCreepsByRole("wallRepairer");
+      const numDefenders = this.countCreepsByRole("defender");
+      const numClaimers = this.countCreepsByRole("claimer");
+      const numAttackers = this.countCreepsByRole("attacker");
 
       if (numHarvesters === 0) {
           return "harvester";
@@ -152,16 +204,26 @@ private countHarvestableSpots(): number {
         return "wallRepairer";
       } else if (numHarvesters < this.countHarvestableSpots()) {
         return "harvester";
+      } else if (2 * numMovers < numHarvesters) {
+          return "mover";
       } else if (numUpgraders < 2) {
           return "upgrader";
       } else if (numBuilders < 3) {
           return "builder";
+      } else if (numDefenders < 2) {
+          return "defender";
+      } else if (numClaimers < 1) {
+          return "claimer";
+      } else if (numAttackers < 3) {
+          return "attacker";
       } else {
       // If there are enough movers and harvesters, use the random selection
       const creepTypes = [
           "builder",
           "mover",
           "upgrader",
+          "defender",
+          "attacker"
       ];
       const index = Math.floor(Math.random() * creepTypes.length);
       return creepTypes[index];
@@ -172,7 +234,7 @@ private countHarvestableSpots(): number {
       const creepType = this.calculateCreepType();
       let body: BodyPartConstant[] = [];
 
-      if(this.energyAvailable >= 450 || this.creeps.length < 3) {
+      if(this.energyAvailable >= 450) {
         console.log("Spawning creep of type:", creepType);
         switch (creepType) {
             case "builder":
@@ -193,6 +255,12 @@ private countHarvestableSpots(): number {
             case "wallRepairer":
                 body = this.getWallRepairerBody();
                 break;
+            case "defender":
+                body = this.getDefenderBody();
+                break;
+            case "claimer":
+                body = this.getClaimerBody();
+                break;
             default:
                 console.log("Unknown creep type:", creepType);
                 return;
@@ -201,7 +269,7 @@ private countHarvestableSpots(): number {
 
     // Create the creep with the calculated body and memory
     const creepName = `W-${Game.time}`;
-    const memory: CreepMemory = { role: creepType, room: this.spawn.room.name, working: false};
+    const memory: CreepMemory = { role: creepType, working: false};
     const result = this.spawn.spawnCreep(body, creepName, { memory });
 
     // Return the result of the `spawnCreep` method call

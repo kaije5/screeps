@@ -4,7 +4,7 @@ import { upgrader } from "./upgrader";
 import { repairer } from "./repairer";
 import { mover } from "./mover";
 
-export function run(creep: Creep) {
+export function runCiv(creep: Creep) {
   //if creep has enough energy, switch to working state
   // if (creep.memory.working == true && creep.store[RESOURCE_ENERGY] == 0) {
     switch (creep.memory.role) {

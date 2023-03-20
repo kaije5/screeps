@@ -1,6 +1,7 @@
 import { ErrorMapper } from "utils/ErrorMapper";
 import CustomSpawn from 'class/CustomSpawn';
-import { run } from "functions/roles/civilean/worker";
+import { runCiv } from "functions/roles/civilean/worker";
+import { runDef } from "functions/roles/defensie/soldier";
 
 
 declare global {
@@ -20,7 +21,7 @@ declare global {
 
   interface CreepMemory {
     role: string;
-    room: string;
+    targetRoom?: string;
     working: boolean;
   }
 
@@ -64,7 +65,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
   // Creep logic
   for (const creep of creeps) {
-    run(creep)
+    runCiv(creep)
+    runDef(creep)
   }
 
   // Automatically delete memory of missing creeps

@@ -2,7 +2,7 @@
 function findDroppedEnergy(creep: Creep): Resource | null {
 
   const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-    filter: (resource) => resource.resourceType === RESOURCE_ENERGY,
+    filter: (resource) => resource.resourceType === RESOURCE_ENERGY && resource.amount >= 50,
   });
 
   if (droppedEnergy.length > 0) {
