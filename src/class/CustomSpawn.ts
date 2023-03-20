@@ -7,11 +7,13 @@ declare var Memory: {
 // CustomSpawn.ts
 class CustomSpawn {
   spawn: StructureSpawn;
+  creeps: Creep[];
   energyAvailable: number;
   energyCapacity: number;
 
   constructor(spawn: StructureSpawn) {
       this.spawn = spawn;
+      this.creeps = spawn.room.find(FIND_MY_CREEPS);
       this.energyAvailable = spawn.room.energyAvailable;
       this.energyCapacity = spawn.room.energyCapacityAvailable;
   }
@@ -93,7 +95,7 @@ class CustomSpawn {
     return body;
   }
 
-  private countCreepsByRole(role: string): number {
+  public countCreepsByRole(role: string): number {
     return _.filter(Game.creeps, (creep) => creep.memory.role === role).length;
   }
 
@@ -133,6 +135,8 @@ private countHarvestableSpots(): number {
       const numHarvesters = this.countCreepsByRole("harvester");
       const numUpgraders = this.countCreepsByRole("upgrader");
       const numBuilders = this.countCreepsByRole("builder");
+      const numRepairers = this.countCreepsByRole("repairer");
+      const numWallRepairers = this.countCreepsByRole("wallRepairer");
 
       if (numHarvesters === 0) {
           return "harvester";
@@ -142,22 +146,22 @@ private countHarvestableSpots(): number {
         return "upgrader";
       } else if (numBuilders < 1) {
         return "builder";
+      } else if (numRepairers < 1) {
+        return "repairer";
+      } else if (numWallRepairers < 1) {
+        return "wallRepairer";
       } else if (numHarvesters < this.countHarvestableSpots()) {
         return "harvester";
-      } else if (numMovers < 4) {
-          return "mover";
       } else if (numUpgraders < 2) {
           return "upgrader";
-      } else if (numBuilders < 2) {
+      } else if (numBuilders < 5) {
           return "builder";
       } else {
       // If there are enough movers and harvesters, use the random selection
       const creepTypes = [
           "builder",
           "mover",
-          "repairer",
           "upgrader",
-          "wallRepairer",
       ];
       const index = Math.floor(Math.random() * creepTypes.length);
       return creepTypes[index];
@@ -168,7 +172,8 @@ private countHarvestableSpots(): number {
       const creepType = this.calculateCreepType();
       let body: BodyPartConstant[] = [];
 
-      if(this.energyAvailable >= 200) {
+      if(this.energyAvailable >= 300 || this.creeps.length < 3) {
+        console.log("Spawning creep of type:", creepType);
         switch (creepType) {
             case "builder":
                 body = this.getBuilderBody();

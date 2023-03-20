@@ -5,6 +5,8 @@ import { repairer } from "./repairer";
 import { mover } from "./mover";
 
 export function run(creep: Creep) {
+  //if creep has enough energy, switch to working state
+  // if (creep.memory.working == true && creep.store[RESOURCE_ENERGY] == 0) {
     switch (creep.memory.role) {
         case "harvester":
           //creep.say("harvester")
@@ -26,8 +28,14 @@ export function run(creep: Creep) {
           //creep.say("repairer")
           repairer(creep);
           break;
+        case "wallRepairer":
+          //creep.say("wallRepairer")
+          repairer(creep);
+          break;
 
         default:
           break;
       }
+  //else creep is still gathering energy
+
 }

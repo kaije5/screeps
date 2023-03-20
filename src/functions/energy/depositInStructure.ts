@@ -18,7 +18,7 @@ export function depositInStructure(creep: Creep) {
             //move to target
             creep.moveTo(target, { visualizePathStyle: { stroke: '#ffffff' } });
         }
-    } else {
+    } else if (creep.store.getUsedCapacity() === 0) {
       creep.memory.working = false;
   }
 }

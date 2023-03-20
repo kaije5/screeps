@@ -40,19 +40,26 @@ export const loop = ErrorMapper.wrapLoop(() => {
   const creeps = Object.values(Game.creeps);
 
   const room = Game.rooms["E52N17"]
-  const totalAllowedCreeps = 20;
+  const totalAllowedCreeps = 25;
 
   // Spawn creeps
   for (const spawn of spawns) {
       const customSpawn = new CustomSpawn(spawn);
+      // list creep ammount
+      console.log("Harvester ammount " + customSpawn.countCreepsByRole("harvester"))
+      console.log("Upgrader ammount " + customSpawn.countCreepsByRole("upgrader"))
+      console.log("Builder ammount " + customSpawn.countCreepsByRole("builder"))
+      console.log("Mover ammount " + customSpawn.countCreepsByRole("mover"))
+      console.log("Repairer ammount " + customSpawn.countCreepsByRole("repairer"))
+      console.log("WallRepairer ammount " + customSpawn.countCreepsByRole("wallRepairer"))
+
       //if creeps amount is less then totalAllowedCreeps spawn creeps.
       if (creeps.length < totalAllowedCreeps) {
-        console.log("Creeps amount is less then totalAllowedCreeps spawning more")
+        console.log("Creeps amount is less then totalAllowedCreeps spawning creep")
         customSpawn.spawnCreep();
-      } else {
-        console.log("Creeps amount is more then totalAllowedCreeps no need to spawn more");
       }
   }
+
 
   // Creep logic
   for (const creep of creeps) {
